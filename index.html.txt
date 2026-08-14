@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1XWINBET - Advanced Gaming & Admin Control</title>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #121212; color: #ffffff; padding-bottom: 75px; }
+
+        /* Modals & Overlays */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .auth-box { background: #1a1a1a; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; border: 1px solid #ffaa00; box-shadow: 0 0 15px rgba(255,170,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .auth-box h2 { text-align: center; color: #ffaa00; margin-bottom: 15px; font-size: 18px; }
+        .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 20px; cursor: pointer; }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; outline: none; }
+        .auth-btn { width: 100%; padding: 10px; background: linear-gradient(90deg, #ffaa00, #ff8800); border: none; border-radius: 6px; font-weight: bold; color: #000; cursor: pointer; margin-top: 10px; }
+        .auth-switch { text-align: center; margin-top: 12px; font-size: 12px; color: #aaa; }
+        .auth-switch span { color: #ffaa00; cursor: pointer; font-weight: bold; }
+
+        /* Top Download Bar */
+        .top-app-bar { background: linear-gradient(90deg, #1c1402, #4a3805); display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; font-size: 12px; color: #fff; }
+        .top-app-bar .btn-dl { background: #ffaa00; border: none; padding: 5px 12px; border-radius: 15px; font-weight: bold; color: #000; cursor: pointer; }
+
+        /* Main Header */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background-color: #1a1a1a; }
+        .logo { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .logo span { color: #ffaa00; }
+        .header-icons { display: flex; gap: 12px; align-items: center; }
+
+        /* Banner Slider */
+        .banner-slider { width: 100%; height: 140px; overflow: hidden; position: relative; }
+        .banner-slider img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Referral Banner */
+        .ref-banner { background-color: #2b1f03; color: #ffaa00; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .btn-claim { background: linear-gradient(90deg, #ffaa00, #ff8800); border: none; padding: 4px 10px; border-radius: 12px; color: #000; font-weight: bold; cursor: pointer; }
+
+        /* Notice Marquee */
+        .notice { background: #181818; color: #ffaa00; padding: 6px 12px; font-size: 11px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #282828; }
+
+        /* User Quick Balance Section */
+        .user-quick-box { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #1a1a1a; margin: 10px; border-radius: 8px; }
+        .bal-display { font-size: 18px; font-weight: bold; color: #ffaa00; }
+        .quick-actions { display: flex; gap: 15px; }
+        .q-act { text-align: center; color: #ccc; font-size: 10px; cursor: pointer; }
+        .q-act i { font-size: 18px; color: #ffaa00; display: block; margin-bottom: 4px; }
+
+        /* Category Filter Slider */
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 10px; margin-bottom: 15px; }
+        .cat-item { background: #222; border: 1px solid #333; padding: 8px 12px; border-radius: 8px; min-width: 80px; text-align: center; font-size: 11px; color: #ccc; cursor: pointer; flex-shrink: 0; }
+        .cat-item.active { border-color: #ffaa00; color: #ffaa00; }
+
+        /* Game Cards Grid */
+        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 15px; }
+        .game-card { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #333; text-align: center; cursor: pointer; }
+        .game-card img { width: 100%; height: 90px; object-fit: cover; }
+        .game-card p { font-size: 11px; padding: 6px 2px; color: #fff; }
+
+        /* Page Section Swapping */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        /* MEMBER CENTER (PROFILE) STYLES */
+        .profile-header { background: linear-gradient(180deg, #d8e5ed 0%, #ffffff 100%); color: #000; padding: 20px 15px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .profile-card { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
+        .vip-badge { background: #5a6e85; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+        .user-info h3 { font-size: 14px; margin-top: 4px; }
+        .user-info p { font-size: 11px; color: #666; }
+
+        .profile-balance { margin-top: 15px; font-size: 22px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+        .profile-btns { display: flex; gap: 8px; margin-top: 15px; }
+        .p-btn { flex: 1; padding: 8px; border: 1px solid #ccc; background: #fff; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; color: #333; text-align: center; }
+
+        .member-center-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px; background: #fff; color: #333; margin-top: 10px; border-radius: 12px; }
+        .grid-item { text-align: center; font-size: 10px; color: #444; cursor: pointer; position: relative; }
+        .grid-icon { width: 42px; height: 42px; background: #fdf6ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; color: #d4a017; font-size: 18px; }
+        .badge-count { position: absolute; top: -2px; right: 15px; background: #ff3b30; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 10px; }
+
+        /* ================= ADMIN PANEL STYLES ================= */
+        .admin-container { padding: 15px; }
+        .admin-header-box { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 12px 15px; border-radius: 8px; border: 1px solid #ffaa00; margin-bottom: 15px; }
+        .admin-title { color: #ffaa00; font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        
+        /* Admin Tab Menu Bar */
+        .admin-menu-bar { display: flex; gap: 6px; overflow-x: auto; background: #1a1a1a; padding: 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px; white-space: nowrap; }
+        .admin-menu-btn { background: #222; border: 1px solid #333; color: #aaa; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .admin-menu-btn.active { background: #ffaa00; color: #000; border-color: #ffaa00; }
+
+        /* Admin Tab Content Sections */
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+
+        .admin-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card h4 { font-size: 11px; color: #aaa; margin-bottom: 5px; }
+        .stat-card span { font-size: 16px; font-weight: bold; color: #ffaa00; }
+
+        .admin-section-title { color: #ffaa00; font-size: 13px; margin: 10px 0 8px 0; display: flex; align-items: center; gap: 6px; font-weight: bold; }
+        
+        .admin-table-wrapper { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; overflow-x: auto; margin-bottom: 15px; }
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+        .admin-table th, .admin-table td { border-bottom: 1px solid #282828; padding: 10px 8px; text-align: center; }
+        .admin-table th { background: #1e1e1e; color: #ffaa00; font-weight: 600; }
+        .admin-table tr:hover { background: #222; }
+
+        .btn-sm { padding: 4px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+
+        /* Social Contact Buttons Styling */
+        .social-contact-box { display: flex; gap: 10px; margin-top: 10px; }
+        .social-btn { flex: 1; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #fff; }
+        .btn-telegram { background: #0088cc; }
+        .btn-facebook { background: #1877f2; }
+
+        /* Bottom Fixed Navigation Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #2e2e2e; z-index: 100; }
+        .nav-link { text-align: center; color: #777; font-size: 10px; text-decoration: none; flex: 1; cursor: pointer; }
+        .nav-link.active { color: #ffaa00; }
+        .nav-link i { font-size: 18px; display: block; margin-bottom: 3px; }
+        .center-claim { position: relative; top: -15px; }
+        .claim-circle { width: 50px; height: 50px; background: linear-gradient(180deg, #ffaa00, #ff5500); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; box-shadow: 0 0 10px rgba(255,170,0,0.5); font-size: 20px; margin: 0 auto; }
+
+        /* Payment Badges */
+        .pay-methods { display: flex; gap: 10px; margin-bottom: 10px; }
+        .pay-card { flex: 1; border: 1px solid #444; padding: 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .pay-card.active { border-color: #ffaa00; background: #2b1f03; color: #ffaa00; }
+    </style>
+</head>
+<body>
+
+    <!-- ================= LOGIN / SIGNUP MODAL ================= -->
+    <div id="authModal" class="modal-overlay">
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-box">
+            <h2>1XWINBET লগইন</h2>
+            <div class="input-group">
+                <label>মোবাইল নম্বর / এডমিন আইডি (admin)</label>
+                <input type="text" id="loginPhone" placeholder="017xxxxxxxx বা admin">
+            </div>
+            <div class="input-group">
+                <label>পাসওয়ার্ড</label>
+                <input type="password" id="loginPass" placeholder="******">
+            </div>
+            <button class="auth-btn" onclick="handleLogin()">লগইন করুন</button>
+            <div class="auth-switch">অ্যাকাউন্ট নেই? <span onclick="switchAuth('signup')">সাইন আপ করুন</span></div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-box" style="display: none;">
+            <h2>1XWINBET রেজিস্টার</h2>
+            <div class="input-group">
+                <label>ইউজার নাম</label>
+                <input type="text" id="regName" placeholder="আপনার নাম">
+            </div>
+            <div class="input-group">
+                <label>ইমেইল অ্যাড্রেস</label>
+                <input type="email" id="regEmail" placeholder="example@gmail.com">
+            </div>
+            <div class="input-group">
+                <label>মোবাইল নম্বর</label>
+                <input type="text" id="regPhone" placeholder="017xxxxxxxx">
+            </div>
+            <div class="input-group">
+                <label>পাসওয়ার্ড</label>
+                <input type="password" id="regPass" placeholder="******">
+            </div>
+            <button class="auth-btn" onclick="handleSignup()">অ্যাকাউন্ট তৈরি করুন</button>
+            <div class="auth-switch">ইতিমধ্যে অ্যাকাউন্ট আছে? <span onclick="switchAuth('login')">লগইন করুন</span></div>
+        </div>
+    </div>
+
+    <!-- ================= DEPOSIT MODAL ================= -->
+    <div id="depositModal" class="modal-overlay" style="display: none;">
+        <div class="auth-box">
+            <span class="close-btn" onclick="closeModals()">&times;</span>
+            <h2>টাকা জমা দিন (Deposit)</h2>
+            <div class="pay-methods">
+                <div class="pay-card active" onclick="selectPay('bKash', this)">bKash</div>
+                <div class="pay-card" onclick="selectPay('Nagad', this)">Nagad</div>
+                <div class="pay-card" onclick="selectPay('Rocket', this)">Rocket</div>
+            </div>
+            
+            <div style="background: #222; padding: 10px; border-radius: 6px; border: 1px dashed #ffaa00; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <span style="font-size: 11px; color: #ffaa00;">ক্যাশ আউট নম্বর: <b id="payNumber" style="font-size: 13px;">01700000000</b></span>
+                    <button class="btn-sm btn-success" onclick="copyPayNumber()" style="font-size: 11px; padding: 3px 8px;"><i class="fa-solid fa-copy"></i> কপি করুন</button>
+                </div>
+                <p id="payMessage" style="font-size: 11px; color: #ccc; border-top: 1px solid #333; padding-top: 5px; margin-top: 5px;">নোট: ক্যাশআউট করার পর সঠিক তথ্য দিন।</p>
+            </div>
+
+            <div class="input-group">
+                <label>পরিমাণ (BDT)</label>
+                <input type="number" id="depAmount" placeholder="সর্বনিম্ন ৩০০ টাকা">
+            </div>
+            <div class="input-group">
+                <label>যে নম্বর থেকে পাঠিয়েছেন</label>
+                <input type="text" id="depSender" placeholder="017xxxxxxxx">
+            </div>
+            <div class="input-group">
+                <label>Transaction ID (TrxID)</label>
+                <input type="text" id="depTrx" placeholder="8N7A6D5X">
+            </div>
+            <button class="auth-btn" onclick="submitDeposit()">ডিপোজিট জমা দিন</button>
+        </div>
+    </div>
+
+    <!-- ================= WITHDRAW MODAL ================= -->
+    <div id="withdrawModal" class="modal-overlay" style="display: none;">
+        <div class="auth-box">
+            <span class="close-btn" onclick="closeModals()">&times;</span>
+            <h2>টাকা তুলুন (Withdrawal)</h2>
+            <div class="input-group">
+                <label>পেমেন্ট মেথড</label>
+                <select id="witMethod">
+                    <option value="bKash">bKash Personal</option>
+                    <option value="Nagad">Nagad Personal</option>
+                    <option value="Rocket">Rocket Personal</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>ব্যক্তিগত নম্বর</label>
+                <input type="text" id="witNumber" placeholder="017xxxxxxxx">
+            </div>
+            <div class="input-group">
+                <label>পরিমাণ (BDT)</label>
+                <input type="number" id="witAmount" placeholder="সর্বনিম্ন ৫০০ টাকা">
+            </div>
+            <button class="auth-btn" onclick="submitWithdraw()">উইথড্র রিকুয়েস্ট পাঠান</button>
+        </div>
+    </div>
+
+    <!-- ================= MY ACCOUNT / VERIFY MODAL ================= -->
+    <div id="accountModal" class="modal-overlay" style="display: none;">
+        <div class="auth-box">
+            <span class="close-btn" onclick="closeModals()">&times;</span>
+            <h2>আমার অ্যাকাউন্ট ও ভেরিফিকেশন</h2>
+            
+            <div style="background: #222; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 12px;">
+                <p>ইউজার নাম: <b id="accModalName" style="color:#ffaa00;">-</b></p>
+                <p>ইউজার আইডি: <b id="accModalId" style="color:#ffaa00;">-</b></p>
+                <p>মোবাইল নম্বর: <b id="accModalPhone" style="color:#ffaa00;">-</b></p>
+                <p>ইমেইল: <b id="accModalEmail" style="color:#ffaa00;">-</b></p>
+                <p style="margin-top: 6px;">অ্যাকাউন্ট স্ট্যাটাস: <span id="accModalStatus" class="status-unverified">অযাচাইকৃত (Unverified)</span></p>
+            </div>
+
+            <div id="verificationSection">
+                <h3 style="font-size: 13px; color: #ffaa00; margin-bottom: 8px;">KYC ভেরিফিকেশন ফর্ম</h3>
+                <div class="input-group">
+                    <label>পূর্ণ নাম (NID / Birth Certificate অনুযায়ী)</label>
+                    <input type="text" id="kycFullName" placeholder="আপনার পুরো নাম">
+                </div>
+                <div class="input-group">
+                    <label>NID / স্মার্ট কার্ড নম্বর</label>
+                    <input type="text" id="kycNidNumber" placeholder="জাতীয় পরিচয়পত্র নম্বর">
+                </div>
+                <button class="auth-btn" onclick="submitVerification()">ভেরিফিকেশন রিকুয়েস্ট পাঠান</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP APP DOWNLOAD BAR -->
+    <div class="top-app-bar">
+        <div><i class="fa-solid fa-gift"></i> অ্যাপ ডাউনলোড করুন ও পান <b>৳৫,৮৮৮</b></div>
+        <button class="btn-dl" onclick="openDynamicPage('অ্যাপ ডাউনলোড করুন')">ডাউনলোড</button>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <div class="header">
+        <i class="fa-solid fa-bars" style="font-size: 18px; color:#ffaa00; cursor:pointer;" onclick="openDynamicPage('সাহায্য কেন্দ্র')"></i>
+        <div class="logo">1XWIN<span>BET</span></div>
+        <div class="header-icons">
+            <a href="https://t.me/your_telegram_username" target="_blank" style="color: #0088cc; font-size: 18px;" title="টেলিগ্রাম যোগাযোগ"><i class="fa-brands fa-telegram"></i></a>
+            <a href="https://facebook.com/your_facebook_page" target="_blank" style="color: #1877f2; font-size: 18px;" title="ফেসবুক যোগাযোগ"><i class="fa-brands fa-facebook"></i></a>
+            <button id="authBtnHeader" class="btn-dl" onclick="openAuthModal()" style="font-size: 10px;">লগইন</button>
+            <i id="logoutBtnHeader" class="fa-solid fa-right-from-bracket" style="font-size: 18px; color:#ffaa00; cursor:pointer; display:none;" onclick="logout()" title="লগআউট"></i>
+        </div>
+    </div>
+
+    <!-- BANNER & NOTICES -->
+    <div class="banner-slider">
+        <img id="mainBannerImg" src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=800&q=80" alt="Casino Banner">
+    </div>
+
+    <div class="ref-banner">
+        <div id="refBannerText">একজন বন্ধুকে রেফার করুন এবং <b>৳৩০৭</b> পান!</div>
+        <button class="btn-claim" onclick="openDynamicPage('বন্ধুদের আমন্ত্রণ জানান')">দাবি করুন</button>
+    </div>
+
+    <div class="notice">
+        <i class="fa-solid fa-bullhorn"></i>
+        <marquee id="noticeMarqueeText" scrollamount="4">1XWINBET-এ স্বাগতম! প্রাইজ দাবি করুন ☀️ 💰✨🚀 প্রথম ডিপোজিট ১০৭% বোনাস উপহার!</marquee>
+    </div>
+
+    <!-- ================= PAGE 1: HOME PAGE ================= -->
+    <div id="homePage" class="page-section active">
+        <div class="user-quick-box">
+            <div>
+                <div style="font-size: 10px; color: #888;">ID: <span class="display-user-id">লগইন করুন</span></div>
+                <div class="bal-display">৳ <span class="display-balance">0.00</span> <i class="fa-solid fa-rotate-right" style="font-size: 12px; cursor:pointer;" onclick="refreshUserData()" title="রিফ্রেশ"></i></div>
+            </div>
+            <div class="quick-actions">
+                <div class="q-act" onclick="openWithdraw()"><i class="fa-solid fa-arrow-up-from-bracket"></i>উত্তোলন</div>
+                <div class="q-act" onclick="openDynamicPage('কাস্টমার সার্ভিস')"><i class="fa-solid fa-headset"></i>সেবা</div>
+                <div class="q-act" onclick="openDeposit()"><i class="fa-solid fa-wallet"></i>ডিপোজিট</div>
+            </div>
+        </div>
+
+        <div class="categories">
+            <div class="cat-item active" onclick="filterCategory('hot', this)"><i class="fa-solid fa-fire"></i><br>গরম খেলা</div>
+            <div class="cat-item" onclick="filterCategory('fav', this)"><i class="fa-solid fa-heart"></i><br>পছন্দ</div>
+            <div class="cat-item" onclick="filterCategory('jili', this)"><i class="fa-solid fa-dice"></i><br>JL Slots</div>
+            <div class="cat-item" onclick="filterCategory('pg', this)"><i class="fa-solid fa-gamepad"></i><br>PG Slots</div>
+            <div class="cat-item" onclick="filterCategory('slots', this)"><i class="fa-solid fa-slot-machine"></i><br>স্লটস</div>
+        </div>
+
+        <div style="padding-bottom: 15px;">
+            <h3 style="color:#ffaa00; font-size:14px; margin:0 15px 10px 15px;"><i class="fa-solid fa-fire"></i> জনপ্রিয় খেলা</h3>
+            <div class="game-grid" id="gameGridContainer">
+                <div class="game-card" onclick="alert('Aviator গেম চালু হচ্ছে...')">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=300&q=80" alt="Aviator">
+                    <p>Aviator</p>
+                </div>
+                <div class="game-card" onclick="alert('Crazy Time গেম চালু হচ্ছে...')">
+                    <img src="https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=300&q=80" alt="Crazy Time">
+                    <p>Crazy Time</p>
+                </div>
+                <div class="game-card" onclick="alert('JILI Slots চালু হচ্ছে...')">
+                    <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=300&q=80" alt="JILI Slots">
+                    <p>JILI Slots</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 2: MEMBER CENTER ================= -->
+    <div id="memberPage" class="page-section">
+        <div class="profile-header">
+            <div class="profile-card">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" class="avatar" alt="User Avatar">
+                <div class="user-info">
+                    <span class="vip-badge"><i class="fa-solid fa-medal"></i> VIP0</span>
+                    <h3>ডাকনাম: <span class="display-user-name">Guest</span></h3>
+                    <p>ID: <span class="display-user-id">লগইন করুন</span></p>
+                    <p>যোগদান করেছেন: <span id="displayJoinDate">2026-08-14</span></p>
+                </div>
+            </div>
+
+            <div class="profile-balance">
+                <span>৳ <span class="display-balance">0.00</span></span>
+                <i class="fa-solid fa-rotate-right" style="font-size: 16px; color:#666; cursor:pointer;" onclick="refreshUserData()" title="রিফ্রেশ"></i>
+            </div>
+
+            <div class="profile-btns">
+                <div class="p-btn" onclick="openDeposit()">জমা দিন</div>
+                <div class="p-btn" onclick="openWithdraw()">উত্তোলন</div>
+                <div class="p-btn" onclick="openAccountModal()">আমার অ্যাকাউন্ট</div>
+            </div>
+        </div>
+
+        <div style="padding:0 10px; margin-top:10px; font-size:12px; color:#888;">সদস্য সেন্টার</div>
+
+        <!-- MEMBER CENTER FEATURES -->
+        <div class="member-center-grid">
+            <div class="grid-item" onclick="openDynamicPage('পুরস্কার সেন্টার')">
+                <div class="badge-count">1</div>
+                <div class="grid-icon"><i class="fa-solid fa-trophy"></i></div>
+                <span>পুরস্কার সেন্টার</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('বেটিং রেকর্ড')">
+                <div class="grid-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span>বেটিং রেকর্ড</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('লাভ এবং লস')">
+                <div class="grid-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <span>লাভ এবং লস</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('জমা রেকর্ড')">
+                <div class="grid-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                <span>জমা রেকর্ড</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('উত্তোলন রেকর্ড')">
+                <div class="grid-icon"><i class="fa-solid fa-arrow-down-short-wide"></i></div>
+                <span>উত্তোলন রেকর্ড</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('অ্যাকাউন্ট রেকর্ড')">
+                <div class="grid-icon"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
+                <span>অ্যাকাউন্ট রেকর্ড</span>
+            </div>
+            <div class="grid-item" onclick="openAccountModal()">
+                <div class="grid-icon"><i class="fa-solid fa-user-gear"></i></div>
+                <span>আমার অ্যাকাউন্ট</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('সুরক্ষা কেন্দ্র')">
+                <div class="grid-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <span>সুরক্ষা কেন্দ্র</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('বন্ধুদের আমন্ত্রণ জানান')">
+                <div class="grid-icon"><i class="fa-solid fa-user-plus"></i></div>
+                <span>বন্ধুদের আমন্ত্রণ জানান</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('রিবেট')">
+                <div class="grid-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <span>রিবেট</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('মেইল')">
+                <div class="grid-icon"><i class="fa-solid fa-envelope"></i></div>
+                <span>মেইল</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('পরামর্শ')">
+                <div class="grid-icon"><i class="fa-solid fa-comment-dots"></i></div>
+                <span>পরামর্শ</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('অ্যাপ ডাউনলোড করুন')">
+                <div class="grid-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <span>অ্যাপ ডাউনলোড করুন</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('কাস্টমার সার্ভিস')">
+                <div class="grid-icon"><i class="fa-solid fa-headset"></i></div>
+                <span>কাস্টমার সার্ভিস</span>
+            </div>
+            <div class="grid-item" onclick="openDynamicPage('সাহায্য কেন্দ্র')">
+                <div class="grid-icon"><i class="fa-solid fa-circle-question"></i></div>
+                <span>সাহায্য কেন্দ্র</span>
+            </div>
+            <div class="grid-item" onclick="logout()">
+                <div class="grid-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+                <span>লগআউট</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DYNAMIC FEATURE PAGE ================= -->
+    <div id="dynamicFeaturePage" class="page-section">
+        <div style="padding: 15px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; padding: 12px 15px; border-radius: 8px; border: 1px solid #ffaa00; margin-bottom: 15px;">
+                <h3 id="dynPageTitle" style="color: #ffaa00; font-size: 15px;">ফিচার</h3>
+                <button class="btn-sm btn-success" onclick="showPage('homePage')">হোমে ফিরুন</button>
+            </div>
+            <div id="dynPageContent" style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; font-size: 13px; min-height: 250px;">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN PANEL PAGE ================= -->
+    <div id="adminPage" class="page-section">
+        <div class="admin-container">
+            <div class="admin-header-box">
+                <div class="admin-title"><i class="fa-solid fa-gauge-high"></i> 1XWINBET এডমিন কন্ট্রোল প্যানেল</div>
+                <button class="btn-sm btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
+            </div>
+
+            <!-- ADMIN SUB-MENU BAR -->
+            <div class="admin-menu-bar">
+                <button class="admin-menu-btn active" onclick="switchAdminTab('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> ড্যাশবোর্ড</button>
+                <button class="admin-menu-btn" onclick="switchAdminTab('transactions', this)"><i class="fa-solid fa-wallet"></i> ডিপোজিট ও উইথড্র</button>
+                <button class="admin-menu-btn" onclick="switchAdminTab('banners', this)"><i class="fa-solid fa-image"></i> ব্যানার ও নোটিশ</button>
+                <button class="admin-menu-btn" onclick="switchAdminTab('socials', this)"><i class="fa-solid fa-share-nodes"></i> সোশ্যাল লিংক</button>
+                <button class="admin-menu-btn" onclick="switchAdminTab('pages', this)"><i class="fa-solid fa-pen-to-square"></i> পেজ কন্টেন্ট</button>
+                <button class="admin-menu-btn" onclick="switchAdminTab('security', this)"><i class="fa-solid fa-key"></i> সিকিউরিটি</button>
+            </div>
+
+            <!-- TAB 1: DASHBOARD -->
+            <div id="adminTab-dashboard" class="admin-tab-content active">
+                <div class="admin-stats-grid">
+                    <div class="stat-card">
+                        <h4>মোট ইউজার</h4>
+                        <span id="adminTotalUsers">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>পেন্ডিং রিকুয়েস্ট</h4>
+                        <span id="adminTotalPending">0</span>
+                    </div>
+                </div>
+                <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; text-align: center; color: #aaa; font-size: 12px;">
+                    <i class="fa-solid fa-shield-cat" style="font-size: 30px; color: #ffaa00; margin-bottom: 8px; display: block;"></i>
+                    এডমিন কন্ট্রোল প্যানেলের ড্যাশবোর্ডে স্বাগতম। উপরে মেনু থেকে যেকোনো সেকশনে প্রবেশ করে সেটিংস পরিবর্তন করুন।
+                </div>
+            </div>
+
+            <!-- TAB 2: DEPOSITS & WITHDRAWALS -->
+            <div id="adminTab-transactions" class="admin-tab-content">
+                <div class="admin-section-title"><i class="fa-solid fa-wallet"></i> ডিপোজিট রিকুয়েস্টসমূহ</div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ইউজার</th>
+                                <th>মেথড</th>
+                                <th>পরিমাণ</th>
+                                <th>TrxID & Sender</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminDepList">
+                            <tr><td colspan="5" style="color: #777;">কোনো ডিপোজিট রিকুয়েস্ট নেই</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="admin-section-title"><i class="fa-solid fa-money-bill-transfer"></i> উইথড্র রিকুয়েস্টসমূহ</div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ইউজার</th>
+                                <th>মেথড / নম্বর</th>
+                                <th>পরিমাণ</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminWitList">
+                            <tr><td colspan="4" style="color: #777;">কোনো উইথড্র রিকুয়েস্ট নেই</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Deposit Number Settings -->
+                <div class="admin-section-title" style="margin-top: 20px;"><i class="fa-solid fa-address-book"></i> ডিপোজিট নম্বর ও মেসেজ ম্যানেজমেন্ট</div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                    <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div class="input-group">
+                            <label>bKash নম্বর</label>
+                            <input type="text" id="adminBkashInput" placeholder="017xxxxxxxx">
+                        </div>
+                        <div class="input-group">
+                            <label>bKash মেসেজ / নোট</label>
+                            <textarea id="adminBkashMsg" rows="2" placeholder="নোট..."></textarea>
+                        </div>
+                    </div>
+                    <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div class="input-group">
+                            <label>Nagad নম্বর</label>
+                            <input type="text" id="adminNagadInput" placeholder="018xxxxxxxx">
+                        </div>
+                        <div class="input-group">
+                            <label>Nagad মেসেজ / নোট</label>
+                            <textarea id="adminNagadMsg" rows="2" placeholder="নোট..."></textarea>
+                        </div>
+                    </div>
+                    <div style="padding-bottom: 5px; margin-bottom: 10px;">
+                        <div class="input-group">
+                            <label>Rocket নম্বর</label>
+                            <input type="text" id="adminRocketInput" placeholder="019xxxxxxxx">
+                        </div>
+                        <div class="input-group">
+                            <label>Rocket মেসেজ / নোট</label>
+                            <textarea id="adminRocketMsg" rows="2" placeholder="নোট..."></textarea>
+                        </div>
+                    </div>
+                    <button class="auth-btn" onclick="saveDepositSettings()">নম্বর ও মেসেজ সেভ করুন</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: BANNERS & NOTICES -->
+            <div id="adminTab-banners" class="admin-tab-content">
+                <div class="admin-section-title"><i class="fa-solid fa-image"></i> ব্যানার, অফার ও নোটিশ ম্যানেজমেন্ট</div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                    <div class="input-group">
+                        <label>মেইন ব্যানার ইমেজ URL (Main Banner)</label>
+                        <input type="text" id="adminBannerImgInput" placeholder="https://image-url.com">
+                    </div>
+                    <div class="input-group">
+                        <label>রেফারেল অফার ব্যানার টেক্সট</label>
+                        <input type="text" id="adminRefTextInput" placeholder="যেমন: বন্ধুকে রেফার করুন এবং ৳৩০৭ পান!">
+                    </div>
+                    <div class="input-group">
+                        <label>নোটিশ মারকিউ টেক্সট (Notice)</label>
+                        <input type="text" id="adminNoticeInput" placeholder="নোটিশের লেখা...">
+                    </div>
+                    <button class="auth-btn" onclick="saveSiteContentSettings()">ব্যানার ও নোটিশ আপডেট করুন</button>
+                </div>
+            </div>
+
+            <!-- TAB 4: SOCIAL LINKS -->
+            <div id="adminTab-socials" class="admin-tab-content">
+                <div class="admin-section-title"><i class="fa-solid fa-share-nodes"></i> সোশ্যাল মিডিয়া লিংক ম্যানেজমেন্ট</div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                    <div class="input-group">
+                        <label>টেলিগ্রাম লিংক বা ইউজারনেম</label>
+                        <input type="text" id="adminTelegramInput" placeholder="https://t.me/your_username">
+                    </div>
+                    <div class="input-group">
+                        <label>ফেসবুক পেজ বা প্রফাইল লিংক</label>
+                        <input type="text" id="adminFacebookInput" placeholder="https://facebook.com/your_page">
+                    </div>
+                    <button class="auth-btn" onclick="saveSocialLinks()">সোশ্যাল লিংক সেভ করুন</button>
+                </div>
+            </div>
+
+            <!-- TAB 5: PAGE CONTENTS -->
+            <div id="adminTab-pages" class="admin-tab-content">
+                <div class="admin-section-title"><i class="fa-solid fa-pen-to-square"></i> পেজ ও ফিচার কন্টেন্ট ম্যানেজমেন্ট</div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                    <div class="input-group">
+                        <label>কোন ফিচারের লেখা পরিবর্তন করতে চান?</label>
+                        <select id="adminFeatureSelect" onchange="loadFeatureContentForAdmin()">
+                            <option value="পুরস্কার সেন্টার">পুরস্কার সেন্টার</option>
+                            <option value="বেটিং রেকর্ড">বেটিং রেকর্ড</option>
+                            <option value="লাভ এবং লস">লাভ এবং লস</option>
+                            <option value="জমা রেকর্ড">জমা রেকর্ড</option>
+                            <option value="উত্তোলন রেকর্ড">উত্তোলন রেকর্ড</option>
+                            <option value="অ্যাকাউন্ট রেকর্ড">অ্যাকাউন্ট রেকর্ড</option>
+                            <option value="সুরক্ষা কেন্দ্র">সুরক্ষা কেন্দ্র</option>
+                            <option value="বন্ধুদের আমন্ত্রণ জানান">বন্ধুদের আমন্ত্রণ জানান</option>
+                            <option value="রিবেট">রিবেট</option>
+                            <option value="মেইল">মেইল</option>
+                            <option value="পরামর্শ">পরামর্শ</option>
+                            <option value="অ্যাপ ডাউনলোড করুন">অ্যাপ ডাউনলোড করুন</option>
+                            <option value="কাস্টমার সার্ভিস">কাস্টমার সার্ভিস</option>
+                            <option value="সাহায্য কেন্দ্র">সাহায্য কেন্দ্র</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>উক্ত ফিচারের তথ্য / নির্দেশিকা / লিংক (HTML বা টেক্সট)</label>
+                        <textarea id="adminFeatureTextVal" rows="4" placeholder="এখানে তথ্য লিখুন..."></textarea>
+                    </div>
+                    <button class="auth-btn" onclick="saveFeatureContent()">ফিচার কন্টেন্ট সেভ করুন</button>
+                </div>
+            </div>
+
+            <!-- TAB 6: SECURITY -->
+            <div id="adminTab-security" class="admin-tab-content">
+                <div class="admin-section-title"><i class="fa-solid fa-key"></i> এডমিন সিকিউরিটি ও পাসওয়ার্ড পরিবর্তন</div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                    <div class="input-group">
+                        <label>বর্তমান পাসওয়ার্ড</label>
+                        <input type="password" id="adminOldPass" placeholder="বর্তমান পাসওয়ার্ড দিন">
+                    </div>
+                    <div class="input-group">
+                        <label>নতুন পাসওয়ার্ড</label>
+                        <input type="password" id="adminNewPass" placeholder="নতুন পাসওয়ার্ড দিন">
+                    </div>
+                    <button class="auth-btn" onclick="changeAdminPassword()">পাসওয়ার্ড পরিবর্তন করুন</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BOTTOM FIXED NAVIGATION BAR -->
+    <div class="bottom-nav">
+        <div class="nav-link active" id="navHome" onclick="showPage('homePage')">
+            <i class="fa-solid fa-house"></i>
+            <span>হোম</span>
+        </div>
+        <div class="nav-link" onclick="openDynamicPage('পুরস্কার সেন্টার')">
+            <i class="fa-solid fa-gift"></i>
+            <span>প্রমোশন</span>
+        </div>
+        <div class="nav-link center-claim" onclick="claimBonus()">
+            <div class="claim-circle"><i class="fa-solid fa-box"></i></div>
+            <span style="color:#ffaa00; font-weight:bold;">৳৩০৭ নিন</span>
+        </div>
+        <div class="nav-link" onclick="openDynamicPage('পুরস্কার সেন্টার')">
+            <i class="fa-solid fa-trophy"></i>
+            <span>পুরস্কার</span>
+        </div>
+        <div class="nav-link" id="navMember" onclick="showPage('memberPage')">
+            <i class="fa-solid fa-user"></i>
+            <span>সদস্য</span>
+        </div>
+    </div>
+
+    <!-- JS CONTROLLER -->
+    <script>
+        let selectedPayMethod = 'bKash';
+
+        window.onload = function() {
+            if(!localStorage.getItem('admin_password')) {
+                localStorage.setItem('admin_password', 'admin123');
+            }
+            if(!localStorage.getItem('social_telegram')) {
+                localStorage.setItem('social_telegram', 'https://t.me/your_telegram_username');
+            }
+            if(!localStorage.getItem('social_facebook')) {
+                localStorage.setItem('social_facebook', 'https://facebook.com/your_facebook_page');
+            }
+
+            if(!localStorage.getItem('dep_bKash')) localStorage.setItem('dep_bKash', '01700000000');
+            if(!localStorage.getItem('dep_bKash_msg')) localStorage.setItem('dep_bKash_msg', 'নোট: ক্যাশআউট করার পর সঠিক TrxID দিন।');
+            if(!localStorage.getItem('dep_Nagad')) localStorage.setItem('dep_Nagad', '01800000000');
+            if(!localStorage.getItem('dep_Nagad_msg')) localStorage.setItem('dep_Nagad_msg', 'নোট: সেন্ড মানি করে ট্রানজ্যাকশন আইডি দিন।');
+            if(!localStorage.getItem('dep_Rocket')) localStorage.setItem('dep_Rocket', '01900000000');
+            if(!localStorage.getItem('dep_Rocket_msg')) localStorage.setItem('dep_Rocket_msg', 'নোট: রকেটে পেমেন্ট সম্পন্ন করুন।');
+
+            if(!localStorage.getItem('site_banner')) localStorage.setItem('site_banner', 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=800&q=80');
+            if(!localStorage.getItem('site_refText')) localStorage.setItem('site_refText', 'একজন বন্ধুকে রেফার করুন এবং ৳৩০৭ পান!');
+            if(!localStorage.getItem('site_notice')) localStorage.setItem('site_notice', '1XWINBET-এ স্বাগতম! প্রাইজ দাবি করুন ☀️ 💰✨🚀 প্রথম ডিপোজিট ১০৭% বোনাস উপহার!');
+
+            document.getElementById('mainBannerImg').src = localStorage.getItem('site_banner');
+            document.getElementById('refBannerText').innerHTML = localStorage.getItem('site_refText');
+            document.getElementById('noticeMarqueeText').innerText = localStorage.getItem('site_notice');
+
+            let loggedInUser = localStorage.getItem('currentUser');
+            if(loggedInUser) {
+                let user = JSON.parse(loggedInUser);
+                if(user.isAdmin) {
+                    showPage('adminPage');
+                    loadAdminData();
+                } else {
+                    updateUserData(user);
+                    document.getElementById('authModal').style.display = 'none';
+                }
+            } else {
+                updateUILoggedOut();
+                document.getElementById('authModal').style.display = 'flex';
+            }
+        };
+
+        function openAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function closeModals() {
+            document.getElementById('depositModal').style.display = 'none';
+            document.getElementById('withdrawModal').style.display = 'none';
+            document.getElementById('accountModal').style.display = 'none';
+        }
+
+        function switchAuth(type) {
+            if(type === 'signup') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('signupForm').style.display = 'block';
+            } else {
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+            }
+        }
+
+        // Admin Tab Controller Function
+        function switchAdminTab(tabName, el) {
+            document.querySelectorAll('.admin-tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.admin-menu-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById('adminTab-' + tabName).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function handleSignup() {
+            let name = document.getElementById('regName').value;
+            let email = document.getElementById('regEmail').value;
+            let phone = document.getElementById('regPhone').value;
+            let pass = document.getElementById('regPass').value;
+
+            if(!name || !email || !phone || !pass) {
+                alert('সবগুলো ঘর সঠিকভাবে পূরণ করুন!');
+                return;
+            }
+
+            let userId = Math.floor(100000000 + Math.random() * 900000000);
+            let today = new Date().toISOString().split('T')[0];
+            let user = { name: name, email: email, phone: phone, pass: pass, id: userId, balance: 0, joinDate: today, isVerified: false, isAdmin: false };
+
+            localStorage.setItem('user_' + phone, JSON.stringify(user));
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            document.getElementById('authModal').style.display = 'none';
+            updateUserData(user);
+            alert('রেজিস্ট্রেশন সফল হয়েছে!');
+        }
+
+        function handleLogin() {
+            let phone = document.getElementById('loginPhone').value;
+            let pass = document.getElementById('loginPass').value;
+            let currentAdminPass = localStorage.getItem('admin_password') || 'admin123';
+
+            if(phone === 'admin' && pass === currentAdminPass) {
+                let adminUser = { name: "System Admin", phone: "Admin", id: "ADMIN", balance: 0, isAdmin: true };
+                localStorage.setItem('currentUser', JSON.stringify(adminUser));
+                document.getElementById('authModal').style.display = 'none';
+                showPage('adminPage');
+                loadAdminData();
+                return;
+            }
+
+            let storedUser = localStorage.getItem('user_' + phone);
+            if(storedUser) {
+                let user = JSON.parse(storedUser);
+                if(user.pass === pass) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    document.getElementById('authModal').style.display = 'none';
+                    updateUserData(user);
+                    showPage('homePage');
+                    alert('লগইন সফল হয়েছে!');
+                } else {
+                    alert('ভুল পাসওয়ার্ড!');
+                }
+            } else {
+                alert('এই নম্বরে কোনো অ্যাকাউন্ট পাওয়া যায়নি!');
+            }
+        }
+
+        function changeAdminPassword() {
+            let oldPass = document.getElementById('adminOldPass').value;
+            let newPass = document.getElementById('adminNewPass').value;
+            let currentAdminPass = localStorage.getItem('admin_password') || 'admin123';
+
+            if(!oldPass || !newPass) {
+                alert('দয়া করে বর্তমান এবং নতুন পাসওয়ার্ড উভয় ঘরই পূরণ করুন!');
+                return;
+            }
+
+            if(oldPass !== currentAdminPass) {
+                alert('বর্তমান পাসওয়ার্ডটি সঠিক নয়!');
+                return;
+            }
+
+            if(newPass.length < 4) {
+                alert('নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!');
+                return;
+            }
+
+            localStorage.setItem('admin_password', newPass);
+            document.getElementById('adminOldPass').value = '';
+            document.getElementById('adminNewPass').value = '';
+            alert('এডমিন পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!');
+        }
+
+        function saveSocialLinks() {
+            let tg = document.getElementById('adminTelegramInput').value;
+            let fb = document.getElementById('adminFacebookInput').value;
+
+            if(tg) localStorage.setItem('social_telegram', tg);
+            if(fb) localStorage.setItem('social_facebook', fb);
+
+            alert('সোশ্যাল মিডিয়া লিংক সফলভাবে আপডেট করা হয়েছে!');
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        function updateUserData(user) {
+            document.querySelectorAll('.display-user-id').forEach(el => el.innerText = user.id);
+            document.querySelectorAll('.display-user-name').forEach(el => el.innerText = user.name);
+            document.querySelectorAll('.display-balance').forEach(el => el.innerText = parseFloat(user.balance).toFixed(2));
+            document.getElementById('displayJoinDate').innerText = user.joinDate || '2026-08-14';
+            
+            document.getElementById('authBtnHeader').style.display = 'none';
+            document.getElementById('logoutBtnHeader').style.display = 'inline-block';
+
+            document.getElementById('accModalName').innerText = user.name;
+            document.getElementById('accModalId').innerText = user.id;
+            document.getElementById('accModalPhone').innerText = user.phone;
+            document.getElementById('accModalEmail').innerText = user.email;
+            
+            let statusEl = document.getElementById('accModalStatus');
+            if(user.isVerified) {
+                statusEl.innerText = "যাচাইকৃত (Verified)";
+                statusEl.className = "status-verified";
+                document.getElementById('verificationSection').style.display = 'none';
+            } else {
+                statusEl.innerText = "অযাচাইকৃত (Unverified)";
+                statusEl.className = "status-unverified";
+                document.getElementById('verificationSection').style.display = 'block';
+            }
+        }
+
+        function updateUILoggedOut() {
+            document.querySelectorAll('.display-user-id').forEach(el => el.innerText = "লগইন করুন");
+            document.querySelectorAll('.display-user-name').forEach(el => el.innerText = "Guest");
+            document.querySelectorAll('.display-balance').forEach(el => el.innerText = "0.00");
+            document.getElementById('authBtnHeader').style.display = 'inline-block';
+            document.getElementById('logoutBtnHeader').style.display = 'none';
+        }
+
+        function refreshUserData() {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(currentUser && !currentUser.isAdmin) {
+                let fresh = JSON.parse(localStorage.getItem('user_' + currentUser.phone));
+                if(fresh) {
+                    localStorage.setItem('currentUser', JSON.stringify(fresh));
+                    updateUserData(fresh);
+                }
+            }
+            alert('ব্যালেন্স রিফ্রেশ করা হয়েছে!');
+        }
+
+        function showPage(pageId) {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser && pageId === 'memberPage') {
+                openAuthModal();
+                return;
+            }
+            
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            if(pageId === 'adminPage') {
+                loadAdminData();
+            }
+        }
+
+        function openDynamicPage(featureName) {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser) { openAuthModal(); return; }
+
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('dynamicFeaturePage').classList.add('active');
+
+            document.getElementById('dynPageTitle').innerText = featureName;
+            
+            let contentKey = 'feat_content_' + featureName;
+            let savedContent = localStorage.getItem(contentKey);
+
+            if(!savedContent) {
+                savedContent = `<p>এখানে <b>${featureName}</b> সংক্রান্ত তথ্য এবং অফারগুলো দেখতে পাবেন। এডমিন প্যানেল থেকে এই তথ্যগুলো যেকোনো সময় পরিবর্তন করা যাবে।</p>`;
+            }
+
+            let tgLink = localStorage.getItem('social_telegram') || 'https://t.me/your_telegram_username';
+            let fbLink = localStorage.getItem('social_facebook') || 'https://facebook.com/your_facebook_page';
+            let socialButtonsHtml = `
+                <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                    <p style="color: #ffaa00; margin-bottom: 8px; font-weight: bold;">সরাসরি যোগাযোগ করুন:</p>
+                    <div class="social-contact-box">
+                        <a href="${tgLink}" target="_blank" class="social-btn btn-telegram"><i class="fa-brands fa-telegram"></i> টেলিগ্রাম চ্যাট</a>
+                        <a href="${fbLink}" target="_blank" class="social-btn btn-facebook"><i class="fa-brands fa-facebook"></i> ফেসবুক পেজ</a>
+                    </div>
+                </div>
+            `;
+
+            if(featureName === 'জমা রেকর্ড' || featureName === 'উত্তোলন রেকর্ড' || featureName === 'বেটিং রেকর্ড' || featureName === 'লাভ এবং লস') {
+                let allTx = JSON.parse(localStorage.getItem('transactions') || '[]');
+                let userTx = allTx.filter(t => t.phone === currentUser.phone);
+                
+                let html = `<p style="margin-bottom:10px; color:#ffaa00;">আপনার সাম্প্রতিক ${featureName} তালিকা:</p>`;
+                if(userTx.length === 0) {
+                    html += `<p style="color:#777;">কোনো রেকর্ড পাওয়া যায়নি।</p>`;
+                } else {
+                    html += `<table class="admin-table" style="width:100%;"><thead><tr><th>টাইপ</th><th>মেথড</th><th>পরিমাণ</th><th>স্ট্যাটাস</th></tr></thead><tbody>`;
+                    userTx.forEach(t => {
+                        html += `<tr><td>${t.type}</td><td>${t.method}</td><td>৳${t.amount}</td><td>${t.status}</td></tr>`;
+                    });
+                    html += `</tbody></table>`;
+                }
+                document.getElementById('dynPageContent').innerHTML = html;
+            } else if(featureName === 'কাস্টমার সার্ভিস' || featureName === 'পরামর্শ' || featureName === 'সাহায্য কেন্দ্র') {
+                document.getElementById('dynPageContent').innerHTML = savedContent + socialButtonsHtml;
+            } else {
+                document.getElementById('dynPageContent').innerHTML = savedContent;
+            }
+        }
+
+        function openDeposit() {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser) { openAuthModal(); return; }
+            updateDepositModalView();
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+
+        function openWithdraw() {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser) { openAuthModal(); return; }
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function openAccountModal() {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser) { openAuthModal(); return; }
+            document.getElementById('accountModal').style.display = 'flex';
+        }
+
+        function selectPay(method, el) {
+            selectedPayMethod = method;
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            updateDepositModalView();
+        }
+
+        function updateDepositModalView() {
+            let number = localStorage.getItem('dep_' + selectedPayMethod) || '01700000000';
+            let message = localStorage.getItem('dep_' + selectedPayMethod + '_msg') || '';
+            document.getElementById('payNumber').innerText = number;
+            document.getElementById('payMessage').innerText = message;
+        }
+
+        function copyPayNumber() {
+            let numText = document.getElementById('payNumber').innerText;
+            navigator.clipboard.writeText(numText).then(() => {
+                alert('নম্বরটি সফলভাবে কপি হয়েছে: ' + numText);
+            }).catch(err => {
+                alert('কপি করতে সমস্যা হয়েছে!');
+            });
+        }
+
+        function saveDepositSettings() {
+            let bkash = document.getElementById('adminBkashInput').value;
+            let bkashMsg = document.getElementById('adminBkashMsg').value;
+            let nagad = document.getElementById('adminNagadInput').value;
+            let nagadMsg = document.getElementById('adminNagadMsg').value;
+            let rocket = document.getElementById('adminRocketInput').value;
+            let rocketMsg = document.getElementById('adminRocketMsg').value;
+
+            if(bkash) localStorage.setItem('dep_bKash', bkash);
+            if(bkashMsg !== undefined) localStorage.setItem('dep_bKash_msg', bkashMsg);
+            if(nagad) localStorage.setItem('dep_Nagad', nagad);
+            if(nagadMsg !== undefined) localStorage.setItem('dep_Nagad_msg', nagadMsg);
+            if(rocket) localStorage.setItem('dep_Rocket', rocket);
+            if(rocketMsg !== undefined) localStorage.setItem('dep_Rocket_msg', rocketMsg);
+
+            alert('ডিপোজিট নম্বর ও মেসেজ সফলভাবে আপডেট করা হয়েছে!');
+        }
+
+        function saveSiteContentSettings() {
+            let banner = document.getElementById('adminBannerImgInput').value;
+            let refText = document.getElementById('adminRefTextInput').value;
+            let notice = document.getElementById('adminNoticeInput').value;
+
+            if(banner) localStorage.setItem('site_banner', banner);
+            if(refText) localStorage.setItem('site_refText', refText);
+            if(notice) localStorage.setItem('site_notice', notice);
+
+            alert('সাইটের ব্যানার এবং নোটিশ সফলভাবে আপডেট হয়েছে!');
+            location.reload();
+        }
+
+        function loadFeatureContentForAdmin() {
+            let feat = document.getElementById('adminFeatureSelect').value;
+            let val = localStorage.getItem('feat_content_' + feat) || '';
+            document.getElementById('adminFeatureTextVal').value = val;
+        }
+
+        function saveFeatureContent() {
+            let feat = document.getElementById('adminFeatureSelect').value;
+            let val = document.getElementById('adminFeatureTextVal').value;
+            localStorage.setItem('feat_content_' + feat, val);
+            alert(feat + ' ফিচারটির কন্টেন্ট সফলভাবে সেভ করা হয়েছে!');
+        }
+
+        function submitDeposit() {
+            let amount = document.getElementById('depAmount').value;
+            let sender = document.getElementById('depSender').value;
+            let trx = document.getElementById('depTrx').value;
+
+            if(!amount || !sender || !trx) {
+                alert('সবগুলো ঘর পূরণ করুন!');
+                return;
+            }
+
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let tx = { type: 'ডিপোজিট', method: selectedPayMethod, amount: amount, trx: trx, sender: sender, status: 'Pending', phone: currentUser.phone, user: currentUser.name };
+
+            let allTx = JSON.parse(localStorage.getItem('transactions') || '[]');
+            allTx.push(tx);
+            localStorage.setItem('transactions', JSON.stringify(allTx));
+
+            closeModals();
+            alert('ডিপোজিট রিকুয়েস্ট সফলভাবে জমা হয়েছে।');
+        }
+
+        function submitWithdraw() {
+            let method = document.getElementById('witMethod').value;
+            let number = document.getElementById('witNumber').value;
+            let amount = document.getElementById('witAmount').value;
+
+            if(!number || !amount) {
+                alert('সবগুলো ঘর পূরণ করুন!');
+                return;
+            }
+
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(parseFloat(amount) > parseFloat(currentUser.balance)) {
+                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
+                return;
+            }
+
+            let tx = { type: 'উত্তোলন', method: method + ' (' + number + ')', amount: amount, status: 'Pending', phone: currentUser.phone, user: currentUser.name };
+
+            let allTx = JSON.parse(localStorage.getItem('transactions') || '[]');
+            allTx.push(tx);
+            localStorage.setItem('transactions', JSON.stringify(allTx));
+
+            closeModals();
+            alert('উইথড্র রিকুয়েস্ট পাঠানো হয়েছে!');
+        }
+
+        function submitVerification() {
+            let fullName = document.getElementById('kycFullName').value;
+            let nid = document.getElementById('kycNidNumber').value;
+
+            if(!fullName || !nid) {
+                alert('সঠিক তথ্য দিয়ে ফরম পূরণ করুন!');
+                return;
+            }
+
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser.isVerified = true;
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('user_' + currentUser.phone, JSON.stringify(currentUser));
+
+            updateUserData(currentUser);
+            closeModals();
+            alert('আপনার KYC ভেরিফিকেশন সফলভাবে সম্পন্ন হয়েছে!');
+        }
+
+        function loadAdminData() {
+            document.getElementById('adminBkashInput').value = localStorage.getItem('dep_bKash') || '';
+            document.getElementById('adminBkashMsg').value = localStorage.getItem('dep_bKash_msg') || '';
+            document.getElementById('adminNagadInput').value = localStorage.getItem('dep_Nagad') || '';
+            document.getElementById('adminNagadMsg').value = localStorage.getItem('dep_Nagad_msg') || '';
+            document.getElementById('adminRocketInput').value = localStorage.getItem('dep_Rocket') || '';
+            document.getElementById('adminRocketMsg').value = localStorage.getItem('dep_Rocket_msg') || '';
+
+            document.getElementById('adminBannerImgInput').value = localStorage.getItem('site_banner') || '';
+            document.getElementById('adminRefTextInput').value = localStorage.getItem('site_refText') || '';
+            document.getElementById('adminNoticeInput').value = localStorage.getItem('site_notice') || '';
+
+            document.getElementById('adminTelegramInput').value = localStorage.getItem('social_telegram') || '';
+            document.getElementById('adminFacebookInput').value = localStorage.getItem('social_facebook') || '';
+
+            loadFeatureContentForAdmin();
+
+            let allTx = JSON.parse(localStorage.getItem('transactions') || '[]');
+            let pendingDeps = allTx.filter(t => t.type === 'ডিপোজিট' && t.status === 'Pending');
+            let pendingWits = allTx.filter(t => t.type === 'উত্তোলন' && t.status === 'Pending');
+            
+            document.getElementById('adminTotalPending').innerText = pendingDeps.length + pendingWits.length;
+
+            let userCount = 0;
+            for(let i=0; i<localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if(key.startsWith('user_')) userCount++;
+            }
+            document.getElementById('adminTotalUsers').innerText = userCount;
+            
+            let depTbody = document.getElementById('adminDepList');
+            if(pendingDeps.length === 0) {
+                depTbody.innerHTML = '<tr><td colspan="5" style="color: #777;">কোনো ডিপোজিট রিকুয়েস্ট নেই</td></tr>';
+            } else {
+                depTbody.innerHTML = '';
+                pendingDeps.forEach((t) => {
+                    let originalIndex = allTx.indexOf(t);
+                    depTbody.innerHTML += `<tr>
+                        <td><b>${t.user}</b><br><small style="color:#aaa;">${t.phone}</small></td>
+                        <td>${t.method}</td>
+                        <td style="color:#ffaa00; font-weight:bold;">৳${t.amount}</td>
+                        <td>Trx: ${t.trx}<br><small style="color:#aaa;">From: ${t.sender}</small></td>
+                        <td><button class="btn-sm btn-success" onclick="approveTx(${originalIndex})">অ্যাপ্রুভ</button></td>
+                    </tr>`;
+                });
+            }
+
+            let witTbody = document.getElementById('adminWitList');
+            if(pendingWits.length === 0) {
+                witTbody.innerHTML = '<tr><td colspan="4" style="color: #777;">কোনো উইথড্র রিকুয়েস্ট নেই</td></tr>';
+            } else {
+                witTbody.innerHTML = '';
+                pendingWits.forEach((t) => {
+                    let originalIndex = allTx.indexOf(t);
+                    witTbody.innerHTML += `<tr>
+                        <td><b>${t.user}</b><br><small style="color:#aaa;">${t.phone}</small></td>
+                        <td>${t.method}</td>
+                        <td style="color:#ffaa00; font-weight:bold;">৳${t.amount}</td>
+                        <td><button class="btn-sm btn-success" onclick="approveTx(${originalIndex})">পেমেন্ট দিন</button></td>
+                    </tr>`;
+                });
+            }
+        }
+
+        function approveTx(index) {
+            let allTx = JSON.parse(localStorage.getItem('transactions') || '[]');
+            let tx = allTx[index];
+            tx.status = 'Approved';
+
+            let userKey = 'user_' + tx.phone;
+            let targetUser = JSON.parse(localStorage.getItem(userKey));
+
+            if(targetUser) {
+                if(tx.type === 'ডিপোজিট') {
+                    targetUser.balance = parseFloat(targetUser.balance) + parseFloat(tx.amount);
+                } else if(tx.type === 'উত্তোলন') {
+                    targetUser.balance = parseFloat(targetUser.balance) - parseFloat(tx.amount);
+                }
+                localStorage.setItem(userKey, JSON.stringify(targetUser));
+            }
+
+            localStorage.setItem('transactions', JSON.stringify(allTx));
+            loadAdminData();
+            alert('ট্রানজ্যাকশন সফলভাবে অ্যাপ্রুভ করা হয়েছে!');
+        }
+
+        function claimBonus() {
+            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if(!currentUser) { openAuthModal(); return; }
+            currentUser.balance = parseFloat(currentUser.balance) + 307;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('user_' + currentUser.phone, JSON.stringify(currentUser));
+            updateUserData(currentUser);
+            alert('৳৩০৭ বোনাস সফলভাবে অ্যাকাউন্টে যোগ হয়েছে!');
+        }
+    </script>
+</body>
+</html>
