@@ -1203,24 +1203,26 @@
 </body>
     
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // রেজিস্ট্রেশন ডেটা ফায়ারবেজে পাঠানোর ফাংশন
+window.handleRegister = async function() {
+    let name = document.getElementById('regName').value;
+    let email = document.getElementById('regEmail').value;
+    let phone = document.getElementById('regPhone').value;
+    let password = document.getElementById('regPassword').value;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD6ljQFg7qjWrSdzz0zPU-jnEEPeJc0PTs",
-      authDomain: "xwinbet-42e35.firebaseapp.com",
-      projectId: "xwinbet-42e35",
-      storageBucket: "xwinbet-42e35.firebasestorage.app",
-      messagingSenderId: "222282541547",
-      appId: "1:222282541547:web:cb54ef33c234d9c220d1ae",
-      measurementId: "G-ZHCFL12KS1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getFirestore(app); // ডাটাবেজ ব্যবহারের জন্য এটি জরুরি
-
-    console.log("Firebase Connected Successfully!");
-  </script>
+    try {
+        await addDoc(collection(db, "users"), {
+            name: name,
+            email: email,
+            phone: phone,
+            password: password,
+            createdAt: new Date()
+        });
+        alert('রেজিস্ট্রেশন সফল হয়েছে!');
+    } catch (e) {
+        console.error("Error adding document: ", e);
+        alert('ত্রুটি হয়েছে!');
+    }
+}
+</script>
 </html>
